@@ -1,0 +1,41 @@
+# Built application files & artifacts
+*.apk
+*.aar
+*.ap_
+*.aab
+*.dex
+*.class
+/build/
+app/build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Gradle files & caches
+.gradle/
+
+# Local configuration files & secrets
+local.properties
+secrets.properties
+.env
+.env.*
+
+# Keystores & signing keys
+*.jks
+*.keystore
+*.p12
+*.pem
+*.pk8
+
+# IDE & project files (Android Studio / IntelliJ)
+*.iml
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
