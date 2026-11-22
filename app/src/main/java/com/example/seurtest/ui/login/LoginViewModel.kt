@@ -1,5 +1,6 @@
 package com.example.seurtest.ui.login
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +11,12 @@ class LoginViewModel : ViewModel() {
         private set
 
     var password by mutableStateOf("")
+        private set
+
+    var rememberMe by mutableStateOf(false)
+        private set
+
+    var passwordVisible by mutableStateOf(false)
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
@@ -28,18 +35,39 @@ class LoginViewModel : ViewModel() {
         errorMessage = null
     }
 
+    fun onRememberMeChanged(checked: Boolean) {
+        rememberMe = checked
+    }
+
+    fun togglePasswordVisibility() {
+        passwordVisible = !passwordVisible
+    }
+
     fun login(onSuccess: () -> Unit) {
-        if (email.isBlank() || password.isBlank()) {
-            errorMessage = "Por favor, introduce correo y contraseña"
+        if (email.isBlank()) {
+            errorMessage = "El correo electrónico no puede estar vacío"
             return
         }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            errorMessage = "El formato del correo electrónico no es válido"
+            return
+        }
+        if (password.isBlank()) {
+            errorMessage = "La contraseña no puede estar vacía"
+            return
+        }
+        if (password.length < 6) {
+            errorMessage = "La contraseña debe tener al menos 6 caracteres"
+            return
+        }
+
         isLoading = true
-        if (email == "admin@seur.com" && password == "123456") {
-            isLoading = false
+        try {
             onSuccess()
-        } else {
+        } catch (e: Exception) {
+            errorMessage = "Error al iniciar sesión: ${e.localizedMessage}"
+        } finally {
             isLoading = false
-            errorMessage = "Credenciales incorrectas (Prueba admin@seur.com / 123456)"
         }
     }
 }

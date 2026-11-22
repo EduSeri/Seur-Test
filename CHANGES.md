@@ -1,37 +1,25 @@
-# Resumen de Cambios - SeurTest
+# Resumen de Cambios - SeurTest (Rediseño Estilo miSEUR)
 
-Este documento resume todas las mejoras, correcciones y nuevas funcionalidades implementadas en el proyecto **SeurTest** utilizando Jetpack Compose y arquitectura MVVM.
+Este documento resume las actualizaciones realizadas para adaptar la pantalla de inicio de sesión al diseño oficial de la aplicación **miSEUR**.
 
-## 1. Corrección del Botón Contador en MainActivity
-- **Problema inicial:** El contador no actualizaba la interfaz gráfica porque utilizaba un entero local (`var contador = remember { 0 }`) en lugar de un estado observable de Compose.
-- **Solución:** Se actualizó a `var contador by remember { mutableIntStateOf(0) }` para asegurar la recomposición automática al pulsar el botón.
+## 1. Rediseño de la Pantalla de Login ([LoginScreen.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/login/LoginScreen.kt))
+- **Fondo Corporativo:** Se aplicó el color azul corporativo de SEUR en la parte superior sin formas abstractas ni burbujas, tal como se solicitó.
+- **Cabecera y Barra Superior:**
+  - Se añadió un contenedor superior izquierdo reservado para la imagen/logo del usuario.
+  - Se añadieron los botones superiores derechos de acción (búsqueda, notificaciones, perfil y menú) como elementos interactivos no funcionales.
+  - Se incorporaron los textos institucionales: *"miSEUR"*, *"Te damos la bienvenida"* e *"Inicia sesión para gestionar tus envíos."*.
+- **Contenedor Blanco Inferior:**
+  - Se diseñó una tarjeta blanca con esquinas superiores redondeadas (`RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)`).
+  - **Campos de formulario:** Campos de texto con fondo gris claro (`#F4F5F7`), iconos descriptivos (email y contraseña), placeholders (`nombre@email.com` y `••••••••`) y botón de alternancia para ver/ocultar la contraseña.
+  - **Opciones adicionales:** Checkbox de *"Seguir conectado"* y enlace de *"Recuperar acceso"* hacia la pantalla de recuperación de contraseña.
+  - **Botón principal ("Acceder"):** Estilizado con el color rojo/naranja corporativo de SEUR y esquinas completamente redondeadas.
+  - **Divisor y redes sociales:** Sección *"o continúa con"* y un recuadro con borde punteado/gris para *"Espacio reservado · acceso con redes sociales"*.
+  - **Pie de página:** Sección de registro con la pregunta *"¿Eres nuevo en miSEUR?"* y el botón contorneado de *"Crear cuenta"*.
 
-## 2. Creación de la Estructura de 3 Pantallas (Login, Recuperar Contraseña, Home)
-Se implementó una arquitectura limpia basada en MVVM (Model-View-ViewModel) y navegación por estados con las siguientes pantallas y clases:
+## 2. Actualización del ViewModel ([LoginViewModel.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/login/LoginViewModel.kt))
+- Se añadió el estado `rememberMe` para gestionar la opción *"Seguir conectado"*.
+- Se mantuvieron las validaciones robustas de correo (`Patterns.EMAIL_ADDRESS`) y contraseña (mínimo 6 caracteres).
 
-| Componente | Archivo | Descripción |
-| :--- | :--- | :--- |
-| **Navegación** | [Screen.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/navigation/Screen.kt) | Clase sellada (`sealed class`) que define los estados de navegación (`Login`, `Recovery`, `Home`). |
-| **Login** | [LoginViewModel.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/login/LoginViewModel.kt) | Gestiona el estado de email, contraseña, visibilidad, errores y validación. |
-| **Login** | [LoginScreen.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/login/LoginScreen.kt) | Interfaz de inicio de sesión con validación de correo, botón de ver/ocultar contraseña y estado de carga. |
-| **Recuperación** | [RecoveryViewModel.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/recovery/RecoveryViewModel.kt) | Gestiona la lógica de envío de instrucciones para recuperar contraseña. |
-| **Recuperación** | [RecoveryScreen.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/recovery/RecoveryScreen.kt) | Pantalla para introducir el correo de recuperación y volver al login. |
-| **Home** | [HomeViewModel.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/home/HomeViewModel.kt) | ViewModel base para la pantalla principal. |
-| **Home** | [HomeScreen.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/home/HomeScreen.kt) | Pantalla principal de bienvenida con opción de cerrar sesión. |
-| **Coordinador** | [MainActivity.kt](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/MainActivity.kt) | Actividad principal que actúa como enrutador dinámico entre las 3 pantallas. |
-
-## 3. Mejoras en la Pantalla de Login
-- **Validaciones robustas:**
-  - Validación de formato de correo electrónico mediante `Patterns.EMAIL_ADDRESS`.
-  - Validación de longitud mínima de contraseña ($\ge$ 6 caracteres).
-  - Mensajes de error claros e informativos en pantalla.
-- **Visibilidad de contraseña:**
-  - Botón de alternancia ("Mostrar" / "Ocultar") integrado de forma accesible y sin necesidad de dependencias externas.
-- **Estado de carga (Loading):**
-  - Indicador de progreso (`CircularProgressIndicator`) en el botón de inicio de sesión durante la simulación de autenticación.
-- **Navegación:**
-  - Transición fluida a la pantalla [HomeScreen](file:///C:/Users/Eduardo/AndroidStudioProjects/SeurTest/app/src/main/java/com/example/seurtest/ui/home/HomeScreen.kt) al introducir credenciales válidas en formato.
-
-## 4. Verificación y Resultados
+## 3. Verificación y Compilación
 - **Análisis estático:** Comprobación de código sin errores ni advertencias de compilación (`analyze_file`).
 - **Compilación:** Ejecución exitosa de `app:assembleDebug` con Gradle.

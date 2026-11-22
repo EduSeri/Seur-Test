@@ -4,24 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.seurtest.ui.home.HomeScreen
+import com.example.seurtest.ui.login.LoginScreen
+import com.example.seurtest.ui.login.LoginViewModel
+import com.example.seurtest.ui.navigation.Screen
+import com.example.seurtest.ui.recovery.RecoveryScreen
+import com.example.seurtest.ui.recovery.RecoveryViewModel
 import com.example.seurtest.ui.theme.SeurTestTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,12 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SeurTestTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                    )
+                    MainAppNavigation(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -44,38 +33,32 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    var contador by remember { mutableIntStateOf(0) }
-    Column(
-        modifier = modifier
-            .background(Color.Green),
-        horizontalAlignment = Alignment.CenterHorizontally
+fun MainAppNavigation(modifier: Modifier = Modifier) {
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Login) }
 
-    ) {
-        Text(
-            text = "Hola $name! $contador",
-            modifier = Modifier
-                .background(Color.Red),
-            textAlign = TextAlign.Center
+    val loginViewModel = remember { LoginViewModel() }
+    val recoveryViewModel = remember { RecoveryViewModel() }
 
-        )
-        Button(
-            onClick = {
-                contador++
+    Box(modifier = modifier.fillMaxSize()) {
+        when (currentScreen) {
+            is Screen.Login -> {
+                LoginScreen(
+                    viewModel = loginViewModel,
+                    onLoginSuccess = { currentScreen = Screen.Home },
+                    onNavigateToRecovery = { currentScreen = Screen.Recovery }
+                )
             }
-        ) {
-            Text(
-                text = "botn"
-            )
+            is Screen.Recovery -> {
+                RecoveryScreen(
+                    viewModel = recoveryViewModel,
+                    onBackToLogin = { currentScreen = Screen.Login }
+                )
+            }
+            is Screen.Home -> {
+                HomeScreen(
+                    onLogout = { currentScreen = Screen.Login }
+                )
+            }
         }
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SeurTestTheme {
-        Greeting("Android", Modifier.fillMaxSize())
     }
 }
