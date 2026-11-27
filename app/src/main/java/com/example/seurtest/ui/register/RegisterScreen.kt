@@ -2,6 +2,7 @@ package com.example.seurtest.ui.register
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -34,7 +35,8 @@ fun RegisterScreen(
     viewModel: RegisterViewModel,
     onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToRecovery: () -> Unit
+    onNavigateToRecovery: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
     RegisterContent(
         nombre = viewModel.nombre,
@@ -63,7 +65,8 @@ fun RegisterScreen(
         isLoading = viewModel.isLoading,
         onRegisterClick = { viewModel.register(onRegisterSuccess) },
         onNavigateToLogin = onNavigateToLogin,
-        onNavigateToRecovery = onNavigateToRecovery
+        onNavigateToRecovery = onNavigateToRecovery,
+        onOpenMenu = onOpenMenu
     )
 }
 
@@ -95,9 +98,14 @@ fun RegisterContent(
     isLoading: Boolean,
     onRegisterClick: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToRecovery: () -> Unit
+    onNavigateToRecovery: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     SeurScreenLayout(
+        scrollState = scrollState,
+        onOpenMenu = onOpenMenu,
         headerContent = {
             Text(
                 text = stringResource(R.string.mi_seur),
@@ -414,7 +422,8 @@ fun RegisterScreenPreview() {
             isLoading = false,
             onRegisterClick = {},
             onNavigateToLogin = {},
-            onNavigateToRecovery = {}
+            onNavigateToRecovery = {},
+            onOpenMenu = {}
         )
     }
 }

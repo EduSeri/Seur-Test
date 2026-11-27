@@ -25,12 +25,13 @@ import com.example.seurtest.ui.theme.SeurTestTheme
 
 @Composable
 fun SeurTopBar(
+    onMenuClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary) // SeurOrange
+            .background(MaterialTheme.colorScheme.primary)
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -44,7 +45,7 @@ fun SeurTopBar(
             modifier = Modifier.height(28.dp)
         )
 
-        // Botones de la derecha (blancos, no funcionales)
+        // Botones de la derecha
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -70,7 +71,7 @@ fun SeurTopBar(
                     tint = Color.White
                 )
             }
-            IconButton(onClick = { /* Non-functional */ }, modifier = Modifier.size(36.dp)) {
+            IconButton(onClick = onMenuClick, modifier = Modifier.size(36.dp)) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.content_desc_menu),

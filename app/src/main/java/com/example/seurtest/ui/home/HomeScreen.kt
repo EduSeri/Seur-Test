@@ -1,6 +1,7 @@
 package com.example.seurtest.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,20 +21,27 @@ import com.example.seurtest.ui.theme.SeurTestTheme
 fun HomeScreen(
     viewModel: HomeViewModel,
     onLogout: () -> Unit,
-    onNavigateToMisEnvios: () -> Unit
+    onNavigateToMisEnvios: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
     HomeContent(
         onLogout = onLogout,
-        onNavigateToMisEnvios = onNavigateToMisEnvios
+        onNavigateToMisEnvios = onNavigateToMisEnvios,
+        onOpenMenu = onOpenMenu
     )
 }
 
 @Composable
 fun HomeContent(
     onLogout: () -> Unit,
-    onNavigateToMisEnvios: () -> Unit
+    onNavigateToMisEnvios: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     SeurScreenLayout(
+        scrollState = scrollState,
+        onOpenMenu = onOpenMenu,
         headerContent = null,
         cardContent = {
             // Welcome Header Card
@@ -115,7 +123,8 @@ fun HomeScreenPreview() {
     SeurTestTheme {
         HomeContent(
             onLogout = {},
-            onNavigateToMisEnvios = {}
+            onNavigateToMisEnvios = {},
+            onOpenMenu = {}
         )
     }
 }

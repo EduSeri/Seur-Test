@@ -1,18 +1,24 @@
 package com.example.seurtest.ui.recovery
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.seurtest.ui.components.SeurScreenLayout
 import com.example.seurtest.ui.theme.SeurTestTheme
 
 @Composable
 fun RecoveryScreen(
     viewModel: RecoveryViewModel,
-    onBackToLogin: () -> Unit
+    onBackToLogin: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
     RecoveryContent(
         email = viewModel.email,
@@ -21,7 +27,8 @@ fun RecoveryScreen(
         isError = viewModel.isError,
         message = viewModel.message,
         onRecoverClick = viewModel::recoverPassword,
-        onBackToLogin = onBackToLogin
+        onBackToLogin = onBackToLogin,
+        onOpenMenu = onOpenMenu
     )
 }
 
@@ -33,27 +40,23 @@ fun RecoveryContent(
     isError: Boolean,
     message: String?,
     onRecoverClick: () -> Unit,
-    onBackToLogin: () -> Unit
+    onBackToLogin: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    val scrollState = rememberScrollState()
+
+    SeurScreenLayout(
+        scrollState = scrollState,
+        onOpenMenu = onOpenMenu,
+        headerContent = {
             Text(
                 text = "Recuperar Contraseña",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
             )
-
+        },
+        cardContent = {
             if (isSuccess) {
                 Text(
                     text = message ?: "¡Correo enviado con éxito!",
@@ -100,11 +103,14 @@ fun RecoveryContent(
                 }
             }
 
-            TextButton(onClick = onBackToLogin) {
+            TextButton(
+                onClick = onBackToLogin,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
                 Text("Volver al inicio de sesión", color = MaterialTheme.colorScheme.primary)
             }
         }
-    }
+    )
 }
 
 @Preview(showBackground = true)
@@ -118,7 +124,8 @@ fun RecoveryScreenPreview() {
             isError = false,
             message = null,
             onRecoverClick = {},
-            onBackToLogin = {}
+            onBackToLogin = {},
+            onOpenMenu = {}
         )
     }
 }

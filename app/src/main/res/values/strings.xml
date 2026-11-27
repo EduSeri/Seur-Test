@@ -64,4 +64,23 @@
     <string name="already_registered">¿Ya estás registrado?</string>
     <string name="login_link">Inicia sesión</string>
     <string name="recover_password_link">Recupera tu contraseña</string>
+    <string name="menu_envios">Enviar</string>
+    <string name="menu_recibir">Recibir</string>
+    <string name="menu_devolver">Devolver</string>
+    <string name="menu_miseur">miSEUR</string>
+    <string name="menu_empresas">Empresas</string>
+    <string name="menu_puntos_pickup">Puntos Pickup</string>
+    <string name="menu_profile">Ver mi perfil</string>
+    <string name="menu_close">Cerrar menú</string>
+    <string name="menu_inicio">Inicio</string>
+    <string name="menu_mis_envios">Mis envíos</string>
+    <string name="menu_enviar_ahora">Enviar ahora</string>
+    <string name="menu_puntos_seur_pickup">Puntos SEUR Pickup</string>
+    <string name="menu_ayuda">Ayuda</string>
+    <string name="menu_datos_personales">Datos personales</string>
+    <string name="menu_notificaciones">Notificaciones</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="login_action">Acceder</string>
+    <string name="welcome_guest">Bienvenido a miSEUR</string>
+    <string name="coming_soon">Próximamente</string>
 </resources>

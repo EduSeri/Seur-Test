@@ -36,7 +36,8 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRecovery: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
     LoginContent(
         email = viewModel.email,
@@ -51,7 +52,8 @@ fun LoginScreen(
         isLoading = viewModel.isLoading,
         onLoginClick = { viewModel.login(onLoginSuccess) },
         onNavigateToRecovery = onNavigateToRecovery,
-        onNavigateToRegister = onNavigateToRegister
+        onNavigateToRegister = onNavigateToRegister,
+        onOpenMenu = onOpenMenu
     )
 }
 
@@ -69,12 +71,14 @@ fun LoginContent(
     isLoading: Boolean,
     onLoginClick: () -> Unit,
     onNavigateToRecovery: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     SeurScreenLayout(
         scrollState = scrollState,
+        onOpenMenu = onOpenMenu,
         headerContent = {
             Text(
                 text = stringResource(R.string.mi_seur),
@@ -314,7 +318,8 @@ fun LoginScreenPreview() {
             isLoading = false,
             onLoginClick = {},
             onNavigateToRecovery = {},
-            onNavigateToRegister = {}
+            onNavigateToRegister = {},
+            onOpenMenu = {}
         )
     }
 }

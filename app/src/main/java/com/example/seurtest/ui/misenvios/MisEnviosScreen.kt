@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -30,7 +31,8 @@ import com.example.seurtest.ui.theme.SeurTestTheme
 @Composable
 fun MisEnviosScreen(
     viewModel: MisEnviosViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
     MisEnviosContent(
         selectedTab = viewModel.selectedTab,
@@ -46,7 +48,8 @@ fun MisEnviosScreen(
         selectedCountry = viewModel.selectedCountry,
         onCountryChanged = viewModel::onCountryChanged,
         isFormValid = viewModel.isFormValid,
-        onBack = onBack
+        onBack = onBack,
+        onOpenMenu = onOpenMenu
     )
 }
 
@@ -65,9 +68,14 @@ fun MisEnviosContent(
     selectedCountry: Country,
     onCountryChanged: (Country) -> Unit,
     isFormValid: Boolean,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onOpenMenu: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     SeurScreenLayout(
+        scrollState = scrollState,
+        onOpenMenu = onOpenMenu,
         headerContent = null,
         cardContent = {
             // Title: Mis envíos
@@ -368,7 +376,8 @@ fun MisEnviosScreenPreview() {
             selectedCountry = commonCountries.first { it.isoCode == "ES" },
             onCountryChanged = {},
             isFormValid = false,
-            onBack = {}
+            onBack = {},
+            onOpenMenu = {}
         )
     }
 }
