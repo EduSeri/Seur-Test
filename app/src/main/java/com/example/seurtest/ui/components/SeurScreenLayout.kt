@@ -1,5 +1,6 @@
 package com.example.seurtest.ui.components
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SeurScreenLayout(
+    scrollState: ScrollState = rememberScrollState(),
     headerContent: (@Composable ColumnScope.() -> Unit)? = null,
     cardContent: @Composable ColumnScope.() -> Unit
 ) {
@@ -20,13 +22,13 @@ fun SeurScreenLayout(
         topBar = {
             SeurTopBar()
         },
-        containerColor = MaterialTheme.colorScheme.surface // Root background matches surface color so bottom navigation bar area is never orange
+        containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.secondary) // Orange background for top area behind header / top bar
+                .background(MaterialTheme.colorScheme.secondary)
         ) {
             if (headerContent != null) {
                 Column(
@@ -41,7 +43,6 @@ fun SeurScreenLayout(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Surface card filling remaining height (weight(1f)) so it always reaches the bottom edge
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -52,14 +53,13 @@ fun SeurScreenLayout(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(scrollState)
                         .imePadding()
                         .padding(horizontal = 24.dp, vertical = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     cardContent()
 
-                    // System navigation bar / gesture bar bottom inset spacer
                     Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
                 }
             }
