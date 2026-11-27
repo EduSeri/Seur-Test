@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -60,14 +59,14 @@ data class MenuSection(
 @Composable
 fun SeurSideMenu(
     visible: Boolean,
-    userName: String?,
     currentRoute: Any?,
     onClose: () -> Unit,
     onNavigate: (Screen) -> Unit,
     onLogout: () -> Unit,
-    onLogin: () -> Unit,
     onComingSoon: (String) -> Unit
 ) {
+    val userName = "Eduardo Seri" // TODO: Obtener del usuario autenticado real
+
     BackHandler(enabled = visible) {
         onClose()
     }
@@ -120,61 +119,52 @@ fun SeurSideMenu(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (userName != null) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .background(MaterialTheme.colorScheme.secondary, CircleShape),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .background(MaterialTheme.colorScheme.secondary, CircleShape),
-                                        contentAlignment = Alignment.Center
+                                    val initials = userName.split(" ")
+                                        .mapNotNull { it.firstOrNull()?.toString() }
+                                        .take(2)
+                                        .joinToString("")
+                                        .uppercase()
+                                    Text(
+                                        text = initials.ifEmpty { "U" },
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = userName,
+                                        fontSize = 17.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    val profileText = stringResource(R.string.menu_profile)
+                                    TextButton(
+                                        onClick = {
+                                            onClose()
+                                            onComingSoon(profileText)
+                                        },
+                                        contentPadding = PaddingValues(0.dp),
+                                        modifier = Modifier.height(24.dp)
                                     ) {
-                                        val initials = userName.split(" ")
-                                            .mapNotNull { it.firstOrNull()?.toString() }
-                                            .take(2)
-                                            .joinToString("")
-                                            .uppercase()
                                         Text(
-                                            text = initials.ifEmpty { "U" },
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 18.sp
+                                            text = profileText,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontSize = 13.sp,
+                                            textDecoration = TextDecoration.Underline
                                         )
-                                    }
-                                    Column {
-                                        Text(
-                                            text = userName,
-                                            fontSize = 17.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        val profileText = stringResource(R.string.menu_profile)
-                                        TextButton(
-                                            onClick = {
-                                                onClose()
-                                                onComingSoon(profileText)
-                                            },
-                                            contentPadding = PaddingValues(0.dp),
-                                            modifier = Modifier.height(24.dp)
-                                        ) {
-                                            Text(
-                                                text = profileText,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                fontSize = 13.sp,
-                                                textDecoration = TextDecoration.Underline
-                                            )
-                                        }
                                     }
                                 }
-                            } else {
-                                Text(
-                                    text = stringResource(R.string.welcome_guest),
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
                             }
 
                             IconButton(
@@ -222,13 +212,7 @@ fun SeurSideMenu(
                             MenuSection("pickup", R.string.menu_puntos_pickup, Icons.Default.Place)
                         )
 
-                        val visibleSections = if (userName == null) {
-                            sections.filter { it.id != "miseur" }
-                        } else {
-                            sections
-                        }
-
-                        visibleSections.forEach { section ->
+                        sections.forEach { section ->
                             val isExpanded = expandedSection == section.id
                             val hasChildren = section.children.isNotEmpty()
                             val chevronRotation by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f, label = "chevron")
@@ -390,68 +374,35 @@ fun SeurSideMenu(
                             color = MaterialTheme.colorScheme.outlineVariant
                         )
 
-                        if (userName != null) {
-                            OutlinedButton(
-                                onClick = {
-                                    onClose()
-                                    onLogout()
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp),
-                                shape = RoundedCornerShape(26.dp),
-                                border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
+                        OutlinedButton(
+                            onClick = {
+                                onClose()
+                                onLogout()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(26.dp),
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.Logout,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.secondary
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.logout),
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-                            }
-                        } else {
-                            Button(
-                                onClick = {
-                                    onClose()
-                                    onLogin()
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp),
-                                shape = RoundedCornerShape(26.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondary
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary
                                 )
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.Login,
-                                        contentDescription = null,
-                                        tint = Color.White
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.login_action),
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(R.string.logout),
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }

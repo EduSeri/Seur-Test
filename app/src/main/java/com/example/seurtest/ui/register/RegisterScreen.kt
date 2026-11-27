@@ -35,8 +35,7 @@ fun RegisterScreen(
     viewModel: RegisterViewModel,
     onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToRecovery: () -> Unit,
-    onOpenMenu: () -> Unit
+    onNavigateToRecovery: () -> Unit
 ) {
     RegisterContent(
         nombre = viewModel.nombre,
@@ -65,8 +64,7 @@ fun RegisterScreen(
         isLoading = viewModel.isLoading,
         onRegisterClick = { viewModel.register(onRegisterSuccess) },
         onNavigateToLogin = onNavigateToLogin,
-        onNavigateToRecovery = onNavigateToRecovery,
-        onOpenMenu = onOpenMenu
+        onNavigateToRecovery = onNavigateToRecovery
     )
 }
 
@@ -98,14 +96,13 @@ fun RegisterContent(
     isLoading: Boolean,
     onRegisterClick: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToRecovery: () -> Unit,
-    onOpenMenu: () -> Unit
+    onNavigateToRecovery: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
     SeurScreenLayout(
         scrollState = scrollState,
-        onOpenMenu = onOpenMenu,
+        showActions = false,
         headerContent = {
             Text(
                 text = stringResource(R.string.mi_seur),
@@ -422,8 +419,7 @@ fun RegisterScreenPreview() {
             isLoading = false,
             onRegisterClick = {},
             onNavigateToLogin = {},
-            onNavigateToRecovery = {},
-            onOpenMenu = {}
+            onNavigateToRecovery = {}
         )
     }
 }

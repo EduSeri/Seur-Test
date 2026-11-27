@@ -63,6 +63,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 LoginScreen(
                     viewModel = viewModel,
                     onLoginSuccess = {
+                        menuOpen = false
                         navController.navigate(Screen.Home) {
                             popUpTo(Screen.Login) { inclusive = true }
                         }
@@ -72,8 +73,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     },
                     onNavigateToRegister = {
                         navController.navigate(Screen.Register)
-                    },
-                    onOpenMenu = { menuOpen = true }
+                    }
                 )
             }
             composable<Screen.Register> {
@@ -90,8 +90,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     },
                     onNavigateToRecovery = {
                         navController.navigate(Screen.Recovery)
-                    },
-                    onOpenMenu = { menuOpen = true }
+                    }
                 )
             }
             composable<Screen.Recovery> {
@@ -101,7 +100,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     onBackToLogin = {
                         navController.popBackStack()
                     },
-                    onOpenMenu = { menuOpen = true }
+                    onOpenMenu = {}
                 )
             }
             composable<Screen.Home> {
@@ -109,6 +108,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 HomeScreen(
                     viewModel = viewModel,
                     onLogout = {
+                        menuOpen = false
                         navController.navigate(Screen.Login) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
@@ -133,7 +133,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
         SeurSideMenu(
             visible = menuOpen,
-            userName = if (currentRoute?.route?.contains("Login") == true || currentRoute?.route?.contains("Recovery") == true || currentRoute?.route?.contains("Register") == true) null else "Eduardo Seri",
             currentRoute = currentRoute,
             onClose = { menuOpen = false },
             onNavigate = { screen ->
@@ -145,12 +144,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 }
             },
             onLogout = {
-                menuOpen = false
-                navController.navigate(Screen.Login) {
-                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                }
-            },
-            onLogin = {
                 menuOpen = false
                 navController.navigate(Screen.Login) {
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }

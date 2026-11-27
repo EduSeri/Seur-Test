@@ -15,13 +15,14 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SeurScreenLayout(
     scrollState: ScrollState = rememberScrollState(),
+    showActions: Boolean = true,
     onOpenMenu: () -> Unit = {},
     headerContent: (@Composable ColumnScope.() -> Unit)? = null,
     cardContent: @Composable ColumnScope.() -> Unit
 ) {
     Scaffold(
         topBar = {
-            SeurTopBar(onMenuClick = onOpenMenu)
+            SeurTopBar(showActions = showActions, onMenuClick = onOpenMenu)
         },
         containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
