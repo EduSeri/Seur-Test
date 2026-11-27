@@ -1,12 +1,21 @@
 package com.example.seurtest.ui.login
 
+import android.app.Application
+import android.content.Context
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.seurtest.data.repository.UserRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
+    private val prefs = application.getSharedPreferences("seur_login_prefs", Context.MODE_PRIVATE)
+    private val userRepository = UserRepository(application)
+
     var email by mutableStateOf("")
         private set
 
@@ -24,6 +33,15 @@ class LoginViewModel : ViewModel() {
 
     var isLoading by mutableStateOf(false)
         private set
+
+    init {
+        val savedRememberMe = prefs.getBoolean("KEY_REMEMBER_ME", false)
+        rememberMe = savedRememberMe
+        if (savedRememberMe) {
+            email = prefs.getString("KEY_SAVED_EMAIL", "") ?: ""
+            password = prefs.getString("KEY_SAVED_PASSWORD", "") ?: ""
+        }
+    }
 
     fun onEmailChanged(newEmail: String) {
         email = newEmail
@@ -43,31 +61,58 @@ class LoginViewModel : ViewModel() {
         passwordVisible = !passwordVisible
     }
 
-    fun login(onSuccess: () -> Unit) {
+    private fun validateCredentials(): Boolean {
         if (email.isBlank()) {
             errorMessage = "El correo electrónico no puede estar vacío"
-            return
+            return false
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             errorMessage = "El formato del correo electrónico no es válido"
-            return
+            return false
         }
         if (password.isBlank()) {
             errorMessage = "La contraseña no puede estar vacía"
-            return
+            return false
         }
-        if (password.length < 6) {
-            errorMessage = "La contraseña debe tener al menos 6 caracteres"
-            return
-        }
+        return true
+    }
 
-        isLoading = true
-        try {
-            onSuccess()
-        } catch (e: Exception) {
-            errorMessage = "Error al iniciar sesión: ${e.localizedMessage}"
-        } finally {
-            isLoading = false
+    private suspend fun simulateBackendAuthentication() {
+        delay(1000)
+    }
+
+    fun login(onSuccess: () -> Unit) {
+        if (isLoading) return
+        if (!validateCredentials()) return
+
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                simulateBackendAuthentication()
+
+                val authenticatedUser = userRepository.authenticate(email, password)
+                if (authenticatedUser == null) {
+                    errorMessage = "Correo o contraseña incorrectos"
+                    return@launch
+                }
+
+                // Save or clear credentials based on "Recuérdame" checkbox (saving both email and password)
+                with(prefs.edit()) {
+                    putBoolean("KEY_REMEMBER_ME", rememberMe)
+                    if (rememberMe) {
+                        putString("KEY_SAVED_EMAIL", email)
+                        putString("KEY_SAVED_PASSWORD", password)
+                    } else {
+                        remove("KEY_SAVED_EMAIL")
+                        remove("KEY_SAVED_PASSWORD")
+                    }
+                    apply()
+                }
+
+                onSuccess()
+            } finally {
+                isLoading = false
+            }
         }
     }
 }

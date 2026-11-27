@@ -1,303 +1,316 @@
 package com.example.seurtest.ui.login
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-val SeurBlue = Color(0xFF00539F)
-val SeurRed = Color(0xFFE41E26)
-val SeurLightGrayBackground = Color(0xFFF4F5F7)
+import com.example.seurtest.R
+import com.example.seurtest.ui.components.SeurScreenLayout
+import com.example.seurtest.ui.theme.SeurTestTheme
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRecovery: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = SeurBlue,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-        ) {
-            // Top Bar
+    LoginContent(
+        email = viewModel.email,
+        onEmailChanged = viewModel::onEmailChanged,
+        password = viewModel.password,
+        onPasswordChanged = viewModel::onPasswordChanged,
+        rememberMe = viewModel.rememberMe,
+        onRememberMeChanged = viewModel::onRememberMeChanged,
+        passwordVisible = viewModel.passwordVisible,
+        onTogglePasswordVisibility = viewModel::togglePasswordVisibility,
+        errorMessage = viewModel.errorMessage,
+        isLoading = viewModel.isLoading,
+        onLoginClick = { viewModel.login(onLoginSuccess) },
+        onNavigateToRecovery = onNavigateToRecovery,
+        onNavigateToRegister = onNavigateToRegister
+    )
+}
+
+@Composable
+fun LoginContent(
+    email: String,
+    onEmailChanged: (String) -> Unit,
+    password: String,
+    onPasswordChanged: (String) -> Unit,
+    rememberMe: Boolean,
+    onRememberMeChanged: (Boolean) -> Unit,
+    passwordVisible: Boolean,
+    onTogglePasswordVisibility: () -> Unit,
+    errorMessage: String?,
+    isLoading: Boolean,
+    onLoginClick: () -> Unit,
+    onNavigateToRecovery: () -> Unit,
+    onNavigateToRegister: () -> Unit
+) {
+    SeurScreenLayout(
+        headerContent = {
+            Text(
+                text = stringResource(R.string.mi_seur),
+                color = Color.White.copy(alpha = 0.8f),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.welcome_title),
+                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 34.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.welcome_subtitle),
+                color = Color.White.copy(alpha = 0.9f),
+                fontSize = 14.sp
+            )
+        },
+        cardContent = {
+            // Email field
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.email_label),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = onEmailChanged,
+                    placeholder = { Text(stringResource(R.string.email_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = stringResource(R.string.content_desc_email_icon),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    colors = textFieldColors()
+                )
+            }
+
+            // Password field
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.password_label),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = onPasswordChanged,
+                    placeholder = { Text(stringResource(R.string.password_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = stringResource(R.string.content_desc_lock_icon),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = onTogglePasswordVisibility) {
+                            Icon(
+                                imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = if (passwordVisible) stringResource(R.string.hide_password) else stringResource(R.string.show_password),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    colors = textFieldColors()
+                )
+
+                if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
+            // Remember me & Recovery
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Top-left image placeholder
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .border(1.dp, Color.White.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
-                        .padding(4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("🖼️", fontSize = 16.sp)
-                }
-
-                // Top-right buttons (non-functional placeholders)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(onClick = { /* Non-functional */ }, modifier = Modifier.size(36.dp)) {
-                        Text("🔍", fontSize = 18.sp)
-                    }
-                    TextButton(onClick = { /* Non-functional */ }, modifier = Modifier.size(36.dp)) {
-                        Text("🔔", fontSize = 18.sp)
-                    }
-                    TextButton(onClick = { /* Non-functional */ }, modifier = Modifier.size(36.dp)) {
-                        Text("👤", fontSize = 18.sp)
-                    }
-                    TextButton(onClick = { /* Non-functional */ }, modifier = Modifier.size(36.dp)) {
-                        Text("☰", fontSize = 18.sp)
-                    }
+                    Checkbox(
+                        checked = rememberMe,
+                        onCheckedChange = onRememberMeChanged,
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Text(stringResource(R.string.remember_me), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                }
+
+                TextButton(onClick = onNavigateToRecovery) {
+                    Text(stringResource(R.string.recover_access), color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
 
-            // Header Texts
-            Column(
+            // Login Button
+            Button(
+                onClick = onLoginClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                enabled = !isLoading
             ) {
-                Text(
-                    text = "miSEUR",
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Te damos la\nbienvenida",
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 34.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Inicia sesión para gestionar tus envíos.",
-                    color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 14.sp
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White
+                    )
+                } else {
+                    Text(stringResource(R.string.login_button), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // Divider "o continúa con"
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
+                Text(
+                    text = stringResource(R.string.or_continue_with),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
+            }
 
-            // Bottom White Card Container
+            val outlineColor = MaterialTheme.colorScheme.outline
+            // Reserved social login space (dashed border)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-                    .background(Color.White)
+                    .height(48.dp)
+                    .drawWithCache {
+                        val stroke = Stroke(
+                            width = 1.5.dp.toPx(),
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                        )
+                        onDrawBehind {
+                            drawRoundRect(
+                                color = outlineColor,
+                                style = stroke,
+                                cornerRadius = CornerRadius(12.dp.toPx())
+                            )
+                        }
+                    }
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Column(
+                Text(
+                    text = stringResource(R.string.social_login_placeholder),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Bottom register footer
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.new_user_question),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = onNavigateToRegister,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp)
-                        .navigationBarsPadding(),
-                    verticalArrangement = Arrangement.SpaceBetween
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        // Email field
-                        Text(
-                            text = "Email o usuario",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        OutlinedTextField(
-                            value = viewModel.email,
-                            onValueChange = viewModel::onEmailChanged,
-                            placeholder = { Text("nombre@email.com", color = Color.Gray) },
-                            leadingIcon = { Text("✉️", fontSize = 18.sp) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.LightGray,
-                                focusedBorderColor = SeurBlue,
-                                unfocusedContainerColor = SeurLightGrayBackground,
-                                focusedContainerColor = SeurLightGrayBackground
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Password field
-                        Text(
-                            text = "Contraseña",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        OutlinedTextField(
-                            value = viewModel.password,
-                            onValueChange = viewModel::onPasswordChanged,
-                            placeholder = { Text("••••••••", color = Color.Gray) },
-                            leadingIcon = { Text("🔒", fontSize = 18.sp) },
-                            trailingIcon = {
-                                TextButton(onClick = { viewModel.togglePasswordVisibility() }) {
-                                    Text(if (viewModel.passwordVisible) "Ocultar" else "Mostrar", color = SeurBlue, fontSize = 12.sp)
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                            visualTransformation = if (viewModel.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.LightGray,
-                                focusedBorderColor = SeurBlue,
-                                unfocusedContainerColor = SeurLightGrayBackground,
-                                focusedContainerColor = SeurLightGrayBackground
-                            )
-                        )
-
-                        if (viewModel.errorMessage != null) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = viewModel.errorMessage!!,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Remember me & Recovery
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    checked = viewModel.rememberMe,
-                                    onCheckedChange = viewModel::onRememberMeChanged,
-                                    colors = CheckboxDefaults.colors(checkedColor = SeurBlue)
-                                )
-                                Text("Seguir conectado", fontSize = 13.sp, color = Color.DarkGray)
-                            }
-
-                            TextButton(onClick = onNavigateToRecovery) {
-                                Text("Recuperar acceso", color = SeurBlue, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Login Button (Seur Red/Orange)
-                        Button(
-                            onClick = { viewModel.login(onLoginSuccess) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            shape = RoundedCornerShape(25.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SeurRed),
-                            enabled = !viewModel.isLoading
-                        ) {
-                            if (viewModel.isLoading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = Color.White
-                                )
-                            } else {
-                                Text("Acceder", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // Divider "o continúa con"
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                            Text(
-                                text = " o continúa con ",
-                                fontSize = 12.sp,
-                                color = Color.Gray,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            )
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Reserved social login space (dashed border)
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
-                                .padding(horizontal = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Espacio reservado · acceso con redes sociales",
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-
-                    // Bottom register footer
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "¿Eres nuevo en miSEUR?",
-                            fontSize = 13.sp,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedButton(
-                            onClick = { /* Non-functional registration */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(24.dp),
-                            border = BorderStroke(1.dp, SeurRed)
-                        ) {
-                            Text("Crear cuenta", color = SeurRed, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
+                    Text(stringResource(R.string.create_account), color = MaterialTheme.colorScheme.secondary, fontSize = 15.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
+    )
+}
+
+@Composable
+private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+    focusedTextColor = MaterialTheme.colorScheme.onSurface
+)
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    SeurTestTheme {
+        LoginContent(
+            email = "usuario@seur.com",
+            onEmailChanged = {},
+            password = "password123",
+            onPasswordChanged = {},
+            rememberMe = true,
+            onRememberMeChanged = {},
+            passwordVisible = false,
+            onTogglePasswordVisibility = {},
+            errorMessage = null,
+            isLoading = false,
+            onLoginClick = {},
+            onNavigateToRecovery = {},
+            onNavigateToRegister = {}
+        )
     }
 }
