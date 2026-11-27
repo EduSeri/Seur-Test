@@ -30,7 +30,7 @@ fun SeurTopBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondary) // SeurOrange
+            .background(MaterialTheme.colorScheme.primary) // SeurOrange
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
