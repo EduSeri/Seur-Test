@@ -107,12 +107,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 val viewModel: HomeViewModel = viewModel()
                 HomeScreen(
                     viewModel = viewModel,
-                    onLogout = {
-                        menuOpen = false
-                        navController.navigate(Screen.Login) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                        }
-                    },
                     onNavigateToMisEnvios = {
                         navController.navigate(Screen.MisEnvios)
                     },

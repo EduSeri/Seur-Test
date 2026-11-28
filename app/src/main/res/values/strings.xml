@@ -83,4 +83,11 @@
     <string name="login_action">Acceder</string>
     <string name="welcome_guest">Bienvenido a miSEUR</string>
     <string name="coming_soon">Próximamente</string>
+    <string name="haz_tu_envio">Haz tu envío</string>
+    <string name="origen">Origen</string>
+    <string name="destino">Destino</string>
+    <string name="localidad_placeholder">Localidad</string>
+    <string name="postal_code_input_label">Código postal</string>
+    <string name="continuar">Continuar</string>
+    <string name="swap_origin_destination">Intercambiar origen y destino</string>
 </resources>

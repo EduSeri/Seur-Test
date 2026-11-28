@@ -36,11 +36,11 @@ fun SeurScreenLayout(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                        .padding(vertical = 12.dp)
                 ) {
                     headerContent()
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             } else {
                 Spacer(modifier = Modifier.height(16.dp))
             }

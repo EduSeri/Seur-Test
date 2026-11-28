@@ -77,7 +77,7 @@ fun CountryBottomSheetSelector(
     val displayValue = if (isPrefixMode) {
         "${selectedCountry.flag} ${selectedCountry.phonePrefix}"
     } else {
-        "${selectedCountry.flag}  ${selectedCountry.name}"
+        selectedCountry.flag
     }
 
     Box(modifier = modifier) {
