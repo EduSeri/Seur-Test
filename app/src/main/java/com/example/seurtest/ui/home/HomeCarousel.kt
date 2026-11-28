@@ -45,12 +45,16 @@ fun HomeCarouselSection() {
     val items = homeCarouselItems
     val pagerState = rememberPagerState(pageCount = { items.size })
 
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress) {
-            delay(2000)
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
             if (!pagerState.isScrollInProgress) {
                 val nextPage = (pagerState.currentPage + 1) % items.size
-                pagerState.animateScrollToPage(nextPage)
+                try {
+                    pagerState.animateScrollToPage(nextPage)
+                } catch (_: Exception) {
+                    // Ignore cancellation
+                }
             }
         }
     }
@@ -111,7 +115,7 @@ fun HomeCarouselSection() {
                                 modifier = Modifier.size(40.dp)
                             )
                             Text(
-                                text = "Imagen del carrusel",
+                                text = "Promoción SEUR ${page + 1}",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold

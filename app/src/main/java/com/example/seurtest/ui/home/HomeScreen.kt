@@ -85,6 +85,7 @@ fun HomeContent(
     onOpenMenu: () -> Unit,
     onStartShipment: (Country, Country) -> Unit
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
     SeurScreenLayout(
@@ -222,14 +223,19 @@ fun HomeContent(
 
                     // Continuar Button
                     Button(
-                        onClick = { onStartShipment(originCountry, destinationCountry) },
+                        onClick = {
+                            Toast.makeText(context, "Próximamente", Toast.LENGTH_SHORT).show()
+                            onStartShipment(originCountry, destinationCountry)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(28.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                            contentColor = Color.White,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+                            disabledContentColor = Color.White.copy(alpha = 0.7f)
                         ),
                         enabled = isFormValid
                     ) {
@@ -240,13 +246,11 @@ fun HomeContent(
                             Text(
                                 text = stringResource(R.string.continuar),
                                 fontSize = 19.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isFormValid) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                                fontWeight = FontWeight.Bold
                             )
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = null,
-                                tint = if (isFormValid) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                                contentDescription = null
                             )
                         }
                     }
